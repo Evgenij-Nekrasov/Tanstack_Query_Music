@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "tsr:generate": "tsr generate",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "api:gen": "openapi-typescript https://musicfun.it-incubator.app/api-json -o ./src/shared/api/schema.ts --root-types"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.85.3",
@@ -20,6 +22,8 @@
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@tanstack/eslint-plugin-query": "^5.83.1",
+    "@tanstack/router-cli": "^1.131.27",
+    "@tanstack/router-plugin": "^1.131.27",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
