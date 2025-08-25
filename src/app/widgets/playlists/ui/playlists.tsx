@@ -1,21 +1,27 @@
 import { useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-import { client } from '../../shared/api/client';
-import { Pagination } from '../../shared/ui/pagination/pagination';
+import { client } from '../../../../shared/api/client';
+import { Pagination } from '../../../../shared/ui/pagination/Pagination';
+import { DeletePlaylist } from '../../../features/playlists/ delete-playlist/ui/delete-playlist';
 
-export const Playlist = () => {
+type Props = {
+  userId?: string;
+};
+
+export const Playlist = ({ userId }: Props) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
 
   const query = useQuery({
-    queryKey: ['playlist', page, search],
+    queryKey: ['playlist', { page, search, userId }],
     queryFn: async ({ signal }) => {
       const response = await client.GET('/playlists', {
         params: {
           query: {
             pageNumber: page,
             search,
+            userId,
           },
         },
         signal,
@@ -49,7 +55,10 @@ export const Playlist = () => {
       />
       <ul>
         {query.data.data.map((playlist) => (
-          <li key={playlist.id}>{playlist.attributes.title}</li>
+          <>
+            <li key={playlist.id}>{playlist.attributes.title}</li>
+            <DeletePlaylist playlistId={playlist.id} />
+          </>
         ))}
       </ul>
     </div>

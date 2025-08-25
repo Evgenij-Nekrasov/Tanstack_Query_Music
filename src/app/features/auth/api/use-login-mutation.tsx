@@ -13,7 +13,7 @@ export const useLoginMutation = () => {
           code: code,
           redirectUri: callbackUrl,
           rememberMe: true,
-          accessTokenTTL: '8d',
+          accessTokenTTL: '8h',
         },
       });
 

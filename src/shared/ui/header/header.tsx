@@ -11,8 +11,6 @@ export const Header = ({ renderAccountBar }: Props) => {
     <header className={styles.header}>
       <nav className={styles.linksBlock}>
         <Link to="/">Playlists</Link>
-        <Link to="/my-playlists">My Playlists</Link>
-        <Link to="/oauth/callback">temp page</Link>
       </nav>
 
       <div>{renderAccountBar()}</div>

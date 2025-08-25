@@ -1,4 +1,4 @@
-import { Playlist } from '../features/playlists';
+import { Playlist } from '../widgets/playlists/ui/playlists';
 
 export function PlaylistPage() {
   return (
