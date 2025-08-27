@@ -7,9 +7,10 @@ import { DeletePlaylist } from '../../../features/playlists/ delete-playlist/ui/
 
 type Props = {
   userId?: string;
+  onPlaylistSelected?: (playlistId: string) => void;
 };
 
-export const Playlist = ({ userId }: Props) => {
+export const Playlist = ({ userId, onPlaylistSelected }: Props) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
 
@@ -34,6 +35,10 @@ export const Playlist = ({ userId }: Props) => {
     placeholderData: keepPreviousData,
   });
 
+  const handlePlaylistSelected = (playlistId: string) => {
+    onPlaylistSelected?.(playlistId);
+  };
+
   if (query.isPending) return <span>Loading...</span>;
   if (query.isError) return <span>{JSON.stringify(query.error)}</span>;
 
@@ -54,12 +59,18 @@ export const Playlist = ({ userId }: Props) => {
         isFetching={query.isFetching}
       />
       <ul>
-        {query.data.data.map((playlist) => (
-          <>
-            <li key={playlist.id}>{playlist.attributes.title}</li>
-            <DeletePlaylist playlistId={playlist.id} />
-          </>
-        ))}
+        {Array.isArray(query.data.data) ? (
+          query.data.data.map((playlist) => (
+            <li key={playlist.id}>
+              <div onClick={() => handlePlaylistSelected(playlist.id)}>
+                {playlist.attributes.title}
+              </div>
+              <DeletePlaylist playlistId={playlist.id} />
+            </li>
+          ))
+        ) : (
+          <li>No playlists found</li>
+        )}
       </ul>
     </div>
   );
