@@ -1,54 +1,37 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { client } from '../../../../../shared/api/client';
 import type { SchemaUpdatePlaylistRequestPayload } from '../../../../../shared/api/schema';
-import { useEffect } from 'react';
+import { usePlaylistQuery } from '../api/use-playlist-query';
+import { useUpdatePlaylistMutation } from '../api/use-update-playlist-mutation';
 
 type Props = {
-  playlistId: string | string;
+  playlistId: string;
+  onCancelEditing: () => void;
 };
 
-export const EditPlaylistForm = ({ playlistId }: Props) => {
+export const EditPlaylistForm = ({ playlistId, onCancelEditing }: Props) => {
   const { handleSubmit, register, reset } =
     useForm<SchemaUpdatePlaylistRequestPayload>();
 
-  const { data, isPending, isError } = useQuery({
-    queryKey: ['playlist', playlistId],
-    queryFn: async () => {
-      const response = await client.GET('/playlists/{playlistId}', {
-        params: { path: { playlistId } },
-      });
-      return response.data!;
-    },
-    enabled: !!playlistId,
-  });
+  const { data, isPending, isError } = usePlaylistQuery(playlistId);
 
   useEffect(() => {
     reset();
   }, [playlistId, reset]);
 
-  const queryClient = useQueryClient();
-
-  const { mutate } = useMutation({
-    mutationFn: async (data: SchemaUpdatePlaylistRequestPayload) => {
-      const response = await client.PUT('/playlists/{playlistId}', {
-        params: {
-          path: { playlistId },
-        },
-        body: { ...data, tagIds: [] },
-      });
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['playlist'],
-      });
-    },
-  });
+  const { mutate } = useUpdatePlaylistMutation(playlistId);
 
   const onSubmit = (data: SchemaUpdatePlaylistRequestPayload) => {
-    mutate(data);
+    mutate(data, {
+      onSuccess: () => {
+        onCancelEditing();
+      },
+    });
+  };
+
+  const handleCancelEditingClick = () => {
+    onCancelEditing();
   };
 
   if (!playlistId) return <></>;
@@ -60,17 +43,20 @@ export const EditPlaylistForm = ({ playlistId }: Props) => {
       <h2>Edit Playlist</h2>
       <p>
         <input
-          defaultValue={data?.data.attributes.title}
+          defaultValue={data?.data?.attributes?.title}
           {...register('title')}
         />
       </p>
       <p>
         <textarea
-          defaultValue={data?.data.attributes.description!}
+          defaultValue={data.data.attributes.description!}
           {...register('description')}
         ></textarea>
       </p>
       <button type="submit">Save</button>
+      <button type="reset" onClick={handleCancelEditingClick}>
+        Cancel
+      </button>
     </form>
   );
 };

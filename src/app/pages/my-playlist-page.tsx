@@ -25,7 +25,10 @@ export function MyPlaylistPage() {
       <Playlist userId={data.userId} onPlaylistSelected={setEditPlaylistId} />
       <hr />
 
-      <EditPlaylistForm playlistId={editPlaylistId} />
+      <EditPlaylistForm
+        onCancelEditing={() => setEditPlaylistId(null)}
+        playlistId={editPlaylistId!}
+      />
     </div>
   );
 }

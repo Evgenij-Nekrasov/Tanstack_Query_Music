@@ -4,7 +4,7 @@ export function PlaylistPage() {
   return (
     <div>
       <h2>Hello Evgeny</h2>
-      <Playlist />
+      <Playlist isSearchActive />
     </div>
   );
 }

@@ -1,31 +1,18 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
-import { client } from '../../../../../shared/api/client';
 import type { SchemaCreatePlaylistRequestPayload } from '../../../../../shared/api/schema';
+import { useAddPlaylistMutation } from '../api/use-add-playlist-mutation';
 
 export const AddPlaylistForm = () => {
-  const { handleSubmit, register } =
+  const { handleSubmit, register, reset } =
     useForm<SchemaCreatePlaylistRequestPayload>();
 
-  const queryClient = useQueryClient();
-
-  const { mutate } = useMutation({
-    mutationFn: async (data: SchemaCreatePlaylistRequestPayload) => {
-      const response = await client.POST('/playlists', {
-        body: data,
-      });
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['playlist'],
-      });
-    },
-  });
+  const { mutate } = useAddPlaylistMutation();
 
   const onSubmit = (data: SchemaCreatePlaylistRequestPayload) => {
-    mutate(data);
+    mutate(data, {
+      onSuccess: () => reset(),
+    });
   };
 
   return (
